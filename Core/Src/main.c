@@ -75,8 +75,7 @@ static void MX_GPIO_Init(void);
 int read_mux_output()
 {
 	// returns value from MUX OUTPUT PIN
-	// TODO
-	return -1;
+	return HAL_GPIO_ReadPin(GPIOA, MUX_OUTPUT_Pin);
 }
 
 int setColumn(int columnNumber)
@@ -112,9 +111,9 @@ int setLine(int lineNumber)
 void beepBuzzer(int msDuration)
 {
 	HAL_GPIO_WritePin(GPIOA, Buzzer_Pin, 1);
-	HAL_Sleep(msDuration);
+	HAL_Delay(msDuration);
 	HAL_GPIO_WritePin(GPIOA, Buzzer_Pin, 0);
-	HAL_Sleep(MORSEUNITDURATION);
+	HAL_Delay(MORSEUNITDURATION);
 
 }
 
@@ -162,7 +161,7 @@ void readLetter(char letter)
 
 	  if(letter == SPACEKEYBINDING)
 	  {
-		  HAL_Sleep(7 * MORSEUNITDURATION); // gap between words
+		  HAL_Delay(7 * MORSEUNITDURATION); // gap between words
 		  return;
 	  }
 
@@ -183,7 +182,7 @@ void readLetter(char letter)
 		}
 	}
 
-	HAL_Sleep(3 * MORSEUNITDURATION); // gap between letters
+	HAL_Delay(3 * MORSEUNITDURATION); // gap between letters
 
 }
 
@@ -195,6 +194,13 @@ void readBuffer(int bufferCursor)
 		readLetter(buffer[i]);
 
 	}
+}
+
+void clearBuffer(int bufferCursor){
+	  for(int i = 0; i < bufferCursor && i < BUFFERLENGTH; i++)
+	  {
+		  buffer[i] = 0;
+	  }
 }
 
 
@@ -222,10 +228,7 @@ int main(void)
 
   int bufferCursor = 0;
 
-  for(size_t i = 0; i < BUFFERLENGTH; i++)
-  {
-	  buffer[i] = 0;
-  }
+  clearBuffer(BUFFERLENGTH);
 
   char keyPressed;
 
@@ -257,14 +260,16 @@ int main(void)
 		  {
 			  setLine(line);
 
-			  HAL_Sleep(SLEEPDURATION);
+			  HAL_Delay(SLEEPDURATION);
 			  if(read_mux_output()) //key is pressed
 			  {
 				  keyPressed = column + line * NLINES;
 				  if(keyPressed == ENTERKEYBINDING) // we should read the buffer and bip the buzzer
 				  {
 					  readBuffer(bufferCursor);
+					  clearBuffer(bufferCursor);
 					  bufferCursor = 0;
+
 
 				  }
 				  else

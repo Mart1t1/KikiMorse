@@ -60,8 +60,8 @@ all: main-build
 main-build: KkiMorse.elf secondary-outputs
 
 # Tool invocations
-KkiMorse.elf KkiMorse.map: $(OBJS) $(USER_OBJS) /Users/martinlacaille/STM32CubeIDE/workspace_1.15.0/KkiMorse/STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "KkiMorse.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/Users/martinlacaille/STM32CubeIDE/workspace_1.15.0/KkiMorse/STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="KkiMorse.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+KkiMorse.elf KkiMorse.map: $(OBJS) $(USER_OBJS) C:\Users\Quentin18\KikiMorse\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "KkiMorse.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\Quentin18\KikiMorse\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="KkiMorse.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
