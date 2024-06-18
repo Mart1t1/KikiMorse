@@ -83,13 +83,13 @@ int setColumn(int columnNumber)
 {
 	// sets the column where a signal is sent through the demux
 	// should change A0, A1, A2 state
-	if (column < 0 || column > 5) //column selected is out of bounds
+	if (columnNumber < 0 || columnNumber > 5) //column selected is out of bounds
 		return -1;
 
 
-	HAL_GPIO_Write(GPIOA, A0_Pin, columnNumber % 2);
-	HAL_GPIO_Write(GPIOA, A1_Pin, columnNumber >> 1 % 2);
-	HAL_GPIO_Write(GPIOA, A2_Pin, columnNumber >> 2 % 2);
+	HAL_GPIO_WritePin(GPIOA, A0_Pin, columnNumber % 2);
+	HAL_GPIO_WritePin(GPIOA, A1_Pin, columnNumber >> 1 % 2);
+	HAL_GPIO_WritePin(GPIOA, A2_Pin, columnNumber >> 2 % 2);
 
 	return 0;
 }
@@ -98,22 +98,22 @@ int setLine(int lineNumber)
 {
 	// sets the listened line where a signal is read through the MUX
 	// should affect S0, S1, S2 state
-	if (column < 0 || column > 5) //line selected is out of bounds
+	if (lineNumber < 0 || lineNumber > 5) //line selected is out of bounds
 		return -1;
 
 
-	HAL_GPIO_Write(GPIOA, S0_Pin, columnNumber % 2);
-	HAL_GPIO_Write(GPIOA, S1_Pin, columnNumber >> 1 % 2);
-	HAL_GPIO_Write(GPIOA, S2_Pin, columnNumber >> 2 % 2);
+	HAL_GPIO_WritePin(GPIOA, S0_Pin, lineNumber % 2);
+	HAL_GPIO_WritePin(GPIOA, S1_Pin, lineNumber >> 1 % 2);
+	HAL_GPIO_WritePin(GPIOA, S2_Pin, lineNumber >> 2 % 2);
 
 	return 0;
 }
 
 void beepBuzzer(int msDuration)
 {
-	HAL_GPIO_WRITE(GPIOA, Buzzer_Pin, 1);
+	HAL_GPIO_WritePin(GPIOA, Buzzer_Pin, 1);
 	HAL_Sleep(msDuration);
-	HAL_GPIO_WRITE(GPIOA, Buzzer_Pin, 0);
+	HAL_GPIO_WritePin(GPIOA, Buzzer_Pin, 0);
 	HAL_Sleep(MORSEUNITDURATION);
 
 }
@@ -168,7 +168,7 @@ void readLetter(char letter)
 
 	for(int i = 0; i < 5; i++)
 	{
-		if(!letters[letter][i]) //end of the word
+		if(letters[letter][i] == 0) //end of the word
 		{
 			return;
 		}
@@ -191,8 +191,8 @@ void readBuffer(int bufferCursor)
 {
 	for(int i = 0; i < bufferCursor; i++)
 	{
-		// TODO: read each character (buffer[i])
-
+		// read each character (buffer[i])
+		readLetter(buffer[i]);
 
 	}
 }
@@ -227,6 +227,8 @@ int main(void)
 	  buffer[i] = 0;
   }
 
+  char keyPressed;
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -248,7 +250,7 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
-	  for(int column = 0; column < NCOLUMNS; i++)
+	  for(int column = 0; column < NCOLUMNS; column++)
 	  {
 		  setColumn(column);
 		  for(int line = 0; line < NLINES; line++)
@@ -256,7 +258,7 @@ int main(void)
 			  setLine(line);
 
 			  HAL_Sleep(SLEEPDURATION);
-			  if(read_mux_output) //key is pressed
+			  if(read_mux_output()) //key is pressed
 			  {
 				  keyPressed = column + line * NLINES;
 				  if(keyPressed == ENTERKEYBINDING) // we should read the buffer and bip the buzzer
